@@ -1,0 +1,34 @@
+version:          "3.7"
+
+
+services:
+  sensors:
+    build:
+      context:    ./services/HomeSensors
+      dockerfile: Dockerfile
+    volumes:
+      - "./services/HomeSensors:/home/HomeSensors/app"
+    ports:
+      - 5001:5000
+    env_file:
+      - app.env
+
+    depends_on:
+      - sensors-db
+  sensors-db:
+    build:
+      context:    ./services/HomeSensors/app/db
+      dockerfile: Dockerfile
+    ports:
+      - 5435:5432
+    env_file:
+      - app.env
+  nginx:
+    build:
+      context:    ./services/nginx
+      dockerfile: Dockerfile
+    restart:      allways
+    ports:
+      - 80:80
+    depends_on:
+      - sensors
