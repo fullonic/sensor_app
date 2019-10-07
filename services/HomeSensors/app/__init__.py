@@ -19,4 +19,8 @@ def create_app(config=None):
 
     from .models import TemperatureHumidity  # noqa
 
+    @app.shell_context_processor
+    def ctx():
+        return {"temp_hum": TemperatureHumidity}
+
     return app

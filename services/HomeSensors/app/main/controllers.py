@@ -4,6 +4,7 @@ import os
 
 from flask import current_app, Blueprint, render_template
 from app import db
+
 main_blueprint = Blueprint(
     "main",
     __name__,
@@ -26,6 +27,7 @@ def home():
 def ldr():
     """Landing Page."""
     from app.sensors.temp import run
+
     ldr = run()
     # return render_template("home.html", temperature=temp, humidity=humidity)
     return ldr
