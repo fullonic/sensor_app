@@ -1,3 +1,4 @@
 - [ ] Create DB backup script to csv file
 - [ ] Add LDR sensor data
 - [ ] Create Dash live data stream
+- [ ] Needs to solve problem with last entry empty

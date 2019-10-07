@@ -17,14 +17,14 @@ Base.prepare(engine, reflect=True)
 
 Temp = Base.classes.temp_hum
 
-Temp
+# Sensors = Base.classes.sensors
 
 db_session = Session(engine)
 
 def run():
-    for i in range(10):
+    """Start reading date from sensors."""
+    while True:
         data = Temp()
-
         # humidity, temperature = Adafruit_DHT.read_retry(11, 17)
         temperature = random.randint(10, 21)
         humidity = random.randint(50, 88)
@@ -34,9 +34,11 @@ def run():
         db_session.add(data)
         db_session.commit()
         # print(f"Temperature: {temperature} ºC || Humidity: {humidity} %")
-        print("writed")
         time.sleep(0.2)
-    return "NONE"
+
+        s = db_session.query(Temp)[-1]
+        if s.state is False:
+            break
 
 
 if __name__ == "__main__":

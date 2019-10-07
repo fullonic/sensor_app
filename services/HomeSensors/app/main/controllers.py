@@ -2,8 +2,10 @@
 
 import os
 
-from flask import current_app, Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for
 from app import db
+
+from app.models import TemperatureHumidity
 
 main_blueprint = Blueprint(
     "main",
@@ -15,22 +17,32 @@ main_blueprint = Blueprint(
 
 
 @main_blueprint.route("/")
-def home():
+def home(state="OFF"):
     """Landing Page."""
-    db.create_all()
     temp = 30
     humidity = 54
-    return render_template("home.html", temperature=temp, humidity=humidity)
+
+    return render_template(
+        "home.html", temperature=temp, humidity=humidity, state=state
+    )
 
 
-@main_blueprint.route("/ldr")
-def ldr():
+@main_blueprint.route("/ldr/<n>")
+def ldr(n):
     """Landing Page."""
     from app.sensors.temp import run
+    switch = TemperatureHumidity()
+    if n == "1":
+        run()
+        switch.turn_on()
+    elif n == "0":
+        switch.turn_off()
+        # TODO:  Needs to solve problem with last entry empty
+        last = switch.query.all()[-1]
+        db.session.delete(last)
+        db.session.commit()
 
-    ldr = run()
-    # return render_template("home.html", temperature=temp, humidity=humidity)
-    return ldr
+    return redirect(url_for("main.home"))
 
 
 # if __name__ == "__main__":

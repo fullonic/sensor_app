@@ -18,9 +18,10 @@ def create_app(config=None):
     db.init_app(app)
 
     from .models import TemperatureHumidity  # noqa
+    from .models import Sensor  # noqa
 
     @app.shell_context_processor
     def ctx():
-        return {"temp_hum": TemperatureHumidity}
+        return {"db": db, "temp_hum": TemperatureHumidity}
 
     return app
