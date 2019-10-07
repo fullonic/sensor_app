@@ -29,13 +29,22 @@ def rc_time(GPIO_LDR):
 
 
 # Catch when script is interrupted, cleanup correctly
-try:
-    # Main loop
-    while True:
-        light = rc_time(GPIO_LDR)
-        if light < 100:
-            print(f"light: {light}")
-        else:
-            print(f"Dark: {light}")
-except KeyboardInterrupt:
+# try:
+#     # Main loop
+#     while True:
+#         light = rc_time(GPIO_LDR)
+#         if light < 100:
+#             print(f"light: {light}")
+#         else:
+#             print(f"Dark: {light}")
+# except KeyboardInterrupt:
+#     GPIO.cleanup()
+
+def manual_read():
+    light = rc_time(GPIO_LDR)
+    if light < 100:
+        print(f"light: {light}")
+    else:
+        print(f"Dark: {light}")
     GPIO.cleanup()
+    return light
