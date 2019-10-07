@@ -30,10 +30,10 @@ def home(state="OFF"):
 @main_blueprint.route("/ldr/<n>")
 def ldr(n):
     """Landing Page."""
-    from app.sensors.temp import run
+    from app.sensors.temp import sensor
     switch = TemperatureHumidity()
     if n == "1":
-        run()
+        sensor()
         switch.turn_on()
     elif n == "0":
         switch.turn_off()

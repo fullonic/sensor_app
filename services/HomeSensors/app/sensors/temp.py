@@ -21,7 +21,27 @@ Temp = Base.classes.temp_hum
 
 db_session = Session(engine)
 
-def run():
+def sensor():
+    import Adafruit_DHT  # noqa
+    while True:
+        data = Temp()
+        # humidity, temperature = Adafruit_DHT.read_retry(11, 17)
+        humidity, temperature = Adafruit_DHT.read_retry(11, 17)
+
+        data.temperature = temperature
+        data.humidity = humidity
+        data.date = datetime.now()
+        db_session.add(data)
+        db_session.commit()
+        # print(f"Temperature: {temperature} ºC || Humidity: {humidity} %")
+        time.sleep(10)
+
+        s = db_session.query(Temp)[-1]
+        if s.state is False:
+            break
+
+
+def test_sensor():
     """Start reading date from sensors."""
     while True:
         data = Temp()
