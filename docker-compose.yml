@@ -1,11 +1,12 @@
 version:          "3.7"
 
-
 services:
   sensors:
     build:
       context:    ./services/HomeSensors
       dockerfile: Dockerfile
+    privileged:   true
+    restart:      always
     volumes:
       - "./services/HomeSensors:/home/HomeSensors/app"
     ports:

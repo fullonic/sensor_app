@@ -21,8 +21,14 @@ Temp = Base.classes.temp_hum
 
 db_session = Session(engine)
 
+
 def sensor():
+    """Temperature and Humidity sensor.
+
+    Reads data from the sensor and directly and it to the DB.
+    """
     import Adafruit_DHT  # noqa
+
     while True:
         data = Temp()
         # humidity, temperature = Adafruit_DHT.read_retry(11, 17)
@@ -42,7 +48,7 @@ def sensor():
 
 
 def test_sensor():
-    """Start reading date from sensors."""
+    """Generate fake data in order to test data insert to DB."""
     while True:
         data = Temp()
         # humidity, temperature = Adafruit_DHT.read_retry(11, 17)
@@ -62,4 +68,4 @@ def test_sensor():
 
 
 if __name__ == "__main__":
-    run()
+    test_sensor()

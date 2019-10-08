@@ -19,8 +19,10 @@ main_blueprint = Blueprint(
 @main_blueprint.route("/")
 def home(state="OFF"):
     """Landing Page."""
-    temp = 30
-    humidity = 54
+    data = TemperatureHumidity().query.all()[-1]
+    temp = data.temperature
+    humidity = data.humidity
+    state = "ON"
 
     return render_template(
         "home.html", temperature=temp, humidity=humidity, state=state
@@ -30,10 +32,13 @@ def home(state="OFF"):
 @main_blueprint.route("/ldr/<n>")
 def ldr(n):
     """Landing Page."""
-    from app.sensors.temp import sensor
+    from app.sensors.temp import test_sensor
+
+    # from app.sensors.temp import sensor
+
     switch = TemperatureHumidity()
     if n == "1":
-        sensor()
+        test_sensor()
         switch.turn_on()
     elif n == "0":
         switch.turn_off()
@@ -43,6 +48,17 @@ def ldr(n):
         db.session.commit()
 
     return redirect(url_for("main.home"))
+
+
+@main_blueprint.route("/sensor")
+def sensor():
+    data = TemperatureHumidity().query.all()[-1]
+
+    return {
+        "Temp": f"{data.temperature} ºC",
+        "Humidity": f"{data.humidity} %",
+        "Date Time": str(data.date),
+    }
 
 
 # if __name__ == "__main__":
