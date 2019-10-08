@@ -37,10 +37,13 @@ def ldr(n):
     """Landing Page."""
     # from app.sensors.temp import test_sensor
     if n == "1":
-        process_ = subprocess.Popen(
-            "python3 app/sensors/temp.py", preexec_fn=os.setsid, shell=True
-        )
-        cache.set("temp_process", os.getpgid(process_.pid))
+        if cache.get("temp_process"):
+            pass
+        else:
+            process_ = subprocess.Popen(
+                "python3 app/sensors/temp.py", preexec_fn=os.setsid, shell=True
+            )
+            cache.set("temp_process", os.getpgid(process_.pid))
     elif n == "0":
         try:
             os.killpg(cache.get("temp_process"), signal.SIGTERM)
