@@ -21,7 +21,8 @@ RUN chmod +x /home/HomeSensors/app/entrypoint.sh
 # COPY APP DIR TO DOCKER CONTAINER
 COPY . /home/HomeSensors/app
 
-# INSTALL DHT SENSOR DRIVER
-RUN cd app/sensors/drivers/Adafruit_Python_DHT && python setup.py install
+# INSTALL DHT SENSOR DRIVER ONLY WORKS WHEN BUILDING IN RASPBERY DEVICE.
+# WHEN RUNNING DEV MACHINE IT WILL IGNORE ERROR AND EXIT WITH CODE 0
+RUN cd app/sensors/drivers/Adafruit_Python_DHT && python setup.py install; exit 0
 # RUN SERVER
 CMD ["/home/HomeSensors/app/entrypoint.sh"]
