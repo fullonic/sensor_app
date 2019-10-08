@@ -62,9 +62,9 @@ def test_sensor():
         # print(f"Temperature: {temperature} ºC || Humidity: {humidity} %")
         time.sleep(0.2)
 
-        s = db_session.query(Temp)[-1]
-        if s.state is False:
-            break
+        # s = db_session.query(Temp)[-1]
+        # if s.state is False:
+        #     break
 
 
 if __name__ == "__main__":

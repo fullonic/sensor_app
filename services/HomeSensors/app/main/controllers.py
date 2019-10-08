@@ -1,10 +1,12 @@
 """Main page for sensor controller and reads."""
 
 import os
+import subprocess
+import signal
 
-from flask import Blueprint, render_template, redirect, url_for
-from app import db
+from flask import Blueprint, render_template, redirect, url_for, session
 
+from app import cache
 from app.models import TemperatureHumidity
 
 main_blueprint = Blueprint(
@@ -32,20 +34,16 @@ def home(state="OFF"):
 @main_blueprint.route("/ldr/<n>")
 def ldr(n):
     """Landing Page."""
-    from app.sensors.temp import test_sensor
+    # from app.sensors.temp import test_sensor
 
-    # from app.sensors.temp import sensor
-
-    switch = TemperatureHumidity()
     if n == "1":
-        test_sensor()
-        switch.turn_on()
+
+        process_ = subprocess.Popen(
+            "python3 app/sensors/temp.py", preexec_fn=os.setsid, shell=True
+        )
+        cache.set("temp_process", os.getpgid(process_.pid))
     elif n == "0":
-        switch.turn_off()
-        # TODO:  Needs to solve problem with last entry empty
-        last = switch.query.all()[-1]
-        db.session.delete(last)
-        db.session.commit()
+        os.killpg(cache.get("temp_process"), signal.SIGTERM)
 
     return redirect(url_for("main.home"))
 
