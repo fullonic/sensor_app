@@ -12,6 +12,11 @@ class Sensors(db.Model):
     frequency = db.Column(db.Float(32), default=1)
     running = db.Column(db.Boolean(), default=True)
 
+    def __init__(self, name, frequency, running):
+        self.name = name
+        self.frequency = frequency
+        self.running = running
+
     def turn_on(self):
         """Turn ON a sensor."""
         self.running = True
@@ -26,7 +31,12 @@ class Sensors(db.Model):
 
     def __repr__(self):
         """Represent the state of all sensors."""
-        return {sensor[0]: sensor[1] for sensor in self.query.all()}
+        return str(
+            {
+                "sensor_name": self.name,
+                "config": {"frequency": self.frequency, "running": self.running},
+            }
+        )
 
 
 class Data(db.Model):
@@ -51,3 +61,10 @@ class TemperatureHumidity(Data):
     def __repr__(self):
         """Item information representation."""
         return f"Temp: {self.temperature} ºC || Hum: {self.humidity} % at {str(self.date)} "
+
+
+class LDR(Data):
+    """Model for LDR sensor."""
+
+    __tablename__ = "ldr"
+    fase = db.Column(db.String(32), default="Day")

@@ -33,15 +33,15 @@ def home(state="OFF"):
     )
 
 
-@main_blueprint.route("/dht/<n>", methods=["POST", "GET"])
-def dht(n):
+@main_blueprint.route("/dht/<switch>", methods=["POST", "GET"])
+def dht(switch):
     """Landing Page."""
     dht = Sensors.query.filter_by(name="DHT").first()
-    if n == "on":
+    if switch == "on":
         dht.turn_on()
         cache.set("dht_running", True)
         sensor_test()
-    elif n == "off":
+    elif switch == "off":
         dht.turn_off()
         cache.set("dht_running", False)
         cache.set("real_temp", None)
@@ -50,17 +50,8 @@ def dht(n):
     return redirect(url_for("main.home"))
 
 
-@main_blueprint.route("/sensor")
-def sensor():
-    data = TemperatureHumidity().query.all()[-1]
-
-    return {
-        "Temp": f"{data.temperature} ºC",
-        "Humidity": f"{data.humidity} %",
-        "Date Time": str(data.date),
-    }
-
-
-# if __name__ == "__main__":
-#     db.create_all()
-#     app.run(debug=True)
+@main_blueprint.route("/ldr", methods=["POST", "GET"])
+def ldr():
+    """Get LDR Information."""
+    from app.sensors.ldr import manual_read  # noqa
+    pass
