@@ -3,34 +3,40 @@ from sqlalchemy import func
 from app import db
 
 
-class Sensor(db.Model):
+class Sensors(db.Model):
     """Base sensor class."""
 
-    __abstract__ = True
+    __tablename__ = "sensors"
     id = db.Column(db.Integer(), primary_key=True)
-    state = db.Column(db.Boolean(), default=True)
-    date = db.Column(db.DateTime(), default=func.now())
+    name = db.Column(db.String(16), nullable=False)
+    running = db.Column(db.Boolean(), default=True)
 
     def turn_on(self):
         """Turn ON a sensor."""
-        self.state = True
+        self.running = True
         db.session.add(self)
         db.session.commit()
 
     def turn_off(self):
         """Turn OFF a sensor."""
-        # s = Sensors.query.filter_by(id=self.id)
-        # self = self.query.all()[-1]
-        self.state = False
+        self.running = False
         db.session.add(self)
         db.session.commit()
 
     def __repr__(self):
         """Represent the state of all sensors."""
-        return f"<Temp_Hum: {self.temp_hum} || LDR: {self.ldr} || PIR: {self.pir}"
+        return {sensor[0]: sensor[1] for sensor in self.query.all()}
 
 
-class TemperatureHumidity(Sensor):
+class Data(db.Model):
+    """Base sensor class."""
+
+    __abstract__ = True
+    id = db.Column(db.Integer(), primary_key=True)
+    date = db.Column(db.DateTime(), default=func.now())
+
+
+class TemperatureHumidity(Data):
     """Temperature and Humidity table."""
 
     __tablename__ = "temp_hum"

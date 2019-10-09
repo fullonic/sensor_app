@@ -25,7 +25,7 @@ def create_app(config=None):
     cache.init_app(app)
 
     from .models import TemperatureHumidity  # noqa
-    from .models import Sensor  # noqa
+    from .models import Sensors  # noqa
 
     @app.before_first_request
     def start_sensors():
@@ -41,6 +41,6 @@ def create_app(config=None):
 
     @app.shell_context_processor
     def ctx():
-        return {"db": db, "temp_hum": TemperatureHumidity}
+        return {"db": db, "temp_hum": TemperatureHumidity, "Sensors": Sensors}
 
     return app
