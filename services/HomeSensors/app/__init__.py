@@ -5,10 +5,12 @@ import subprocess
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_caching import Cache
 
 db = SQLAlchemy()
 cache = Cache()
+migrate = Migrate()
 
 
 def create_app(config=None):
@@ -22,6 +24,7 @@ def create_app(config=None):
     main_create_module(app)
 
     db.init_app(app)
+    migrate.init_app(app, db)
     cache.init_app(app)
 
     from .models import TemperatureHumidity  # noqa

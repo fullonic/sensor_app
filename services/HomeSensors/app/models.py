@@ -9,6 +9,7 @@ class Sensors(db.Model):
     __tablename__ = "sensors"
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(16), nullable=False)
+    frequency = db.Column(db.Float(32), default=1)
     running = db.Column(db.Boolean(), default=True)
 
     def turn_on(self):
