@@ -30,16 +30,10 @@ def create_app(config=None):
     from .models import TemperatureHumidity  # noqa
     from .models import Sensors  # noqa
 
+    # TODO: CRETE HERE A THREAD TO START SENSORS
     @app.before_first_request
     def start_sensors():
-        # if cache.get("temp_process"):
-        #     pass
-        # else:
-        process_ = subprocess.Popen(
-            "python3 app/sensors/temp.py", preexec_fn=os.setsid, shell=True
-        )
-        cache.set("temp_process", os.getpgid(process_.pid))
-
+        pass
 
 
     @app.shell_context_processor

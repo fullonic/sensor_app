@@ -7,7 +7,8 @@ import signal
 from flask import Blueprint, render_template, redirect, url_for, session
 
 from app import cache
-from app.models import TemperatureHumidity
+from app.models import TemperatureHumidity, Sensors
+from app.sensors.temp import sensor_test
 
 
 main_blueprint = Blueprint(
@@ -22,9 +23,9 @@ main_blueprint = Blueprint(
 @main_blueprint.route("/")
 def home(state="OFF"):
     """Landing Page."""
-    data = TemperatureHumidity().query.all()[-1]
-    temp = data.temperature
-    humidity = data.humidity
+    temp = cache.get("real_temp")
+    humidity = cache.get("real_hum")
+
     state = "ON"
 
     return render_template(
@@ -32,25 +33,20 @@ def home(state="OFF"):
     )
 
 
-@main_blueprint.route("/ldr/<n>")
-def ldr(n):
+@main_blueprint.route("/dht/<n>", methods=["POST", "GET"])
+def dht(n):
     """Landing Page."""
-    # from app.sensors.temp import test_sensor
-    if n == "1":
-        if cache.get("temp_process"):
-            pass
-        else:
-            process_ = subprocess.Popen(
-                "python3 app/sensors/temp.py", preexec_fn=os.setsid, shell=True
-            )
-            cache.set("temp_process", os.getpgid(process_.pid))
-    elif n == "0":
-        try:
-            os.killpg(cache.get("temp_process"), signal.SIGTERM)
-            cache.delete("temp_process")
-        except TypeError:
-            pass
-
+    dht = Sensors.query.filter_by(name="DHT").first()
+    if n == "on":
+        dht.turn_on()
+        cache.set("dht_running", True)
+        sensor_test()
+    elif n == "off":
+        dht.turn_off()
+        cache.set("dht_running", False)
+        cache.set("real_temp", None)
+        cache.set("real_hum", None)
+        sensor_test()
     return redirect(url_for("main.home"))
 
 
