@@ -29,7 +29,8 @@ def dht_sensor():
 
 def sensor_test():
     """Generate fake data for testing purposes."""
-    # dht = Sensors.query.filter_by(name="dht").first()
+    dht = Sensors.query.filter_by(name="DHT").first()
+    cache.set("dht_running", dht.running)
     freq = 1  # frequency of reading data for real time information
     write_to_db = 10  # frequency of saving to db
     count = 0  # flag variable
@@ -52,9 +53,9 @@ def sensor_test():
             write_to_db += count
         count += 1
         time.sleep(freq)
-        dht = Sensors.query.filter_by(name="DHT").first()
-        if not dht.running:
-            break
+        # dht = Sensors.query.filter_by(name="DHT").first()
+        # if not dht.running:
+        #     break
 
     else:
         print("STOPPED")

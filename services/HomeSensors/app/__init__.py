@@ -1,9 +1,11 @@
 """Home Sensor Pi."""
 
 import os
-import subprocess
+import datetime
+from threading import Thread
 
 from flask import Flask
+from werkzeug.serving import is_running_from_reloader
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_caching import Cache
@@ -29,11 +31,19 @@ def create_app(config=None):
 
     from .models import TemperatureHumidity  # noqa
     from .models import Sensors  # noqa
+    from app.sensors.temp import sensor_test
 
     # TODO: CRETE HERE A THREAD TO START SENSORS
     @app.before_first_request
     def start_sensors():
-        pass
+        def run(app):
+            with app.app_context():
+                sensor_test()
+
+        Thread(target=run, args=(app,)).start()
+        with open("log.txt", "w") as f:
+            f.write(f"RUNNING FIRST:  {str(cache.get('dht_running'))}")
+            f.write(str(datetime.datetime.now()))
 
 
     @app.shell_context_processor

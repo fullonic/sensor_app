@@ -3,5 +3,6 @@ Flask-SQLAlchemy
 flask_migrate
 Flask-Caching
 psycopg2-binary
+requests
 gunicorn
 RPi.GPIO
