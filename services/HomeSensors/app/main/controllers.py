@@ -59,6 +59,14 @@ def ldr():
 # FOR API ROUTES
 @main_blueprint.route("/real_time")
 def real_time():
+    """Get 'real time' information of DHT sensor."""
     temp = cache.get("real_temp")
     humidity = cache.get("real_hum")
     return {"t": temp, "h": humidity}
+
+
+@main_blueprint.route("/sensors/<name>", methods=["GET"])
+def sensors_config(name):
+    """Get sensor configuration information."""
+    sensor = Sensors.query.filter_by(name=name).first()
+    return sensor.to_json

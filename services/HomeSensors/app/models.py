@@ -29,14 +29,17 @@ class Sensors(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    @property
+    def to_json(self):
+        """JSON representation of sensor config."""
+        return {
+            "sensor_name": self.name,
+            "config": {"frequency": self.frequency, "running": self.running},
+        }
+
     def __repr__(self):
         """Represent the state of all sensors."""
-        return str(
-            {
-                "sensor_name": self.name,
-                "config": {"frequency": self.frequency, "running": self.running},
-            }
-        )
+        return str(self.to_json())
 
 
 class Data(db.Model):
