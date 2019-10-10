@@ -95,6 +95,7 @@
 
 
   $(document).ready(function() {
+    // READ DHT SENSOR DATA
     setInterval(
       function() {
         $.ajax({
@@ -110,6 +111,26 @@
 
       }, 3000
     );
+
+    // SET DHT TOGGLE ON OR OFF DEPENDING DB CONFIG
+    $.ajax({
+      type: 'GET',
+      url: "/main/sensors/DHT",
+      contentType: false,
+      success: function(data) {
+        if (data.config.running) {
+          $("#dht_switch").prop("checked", true);
+          $.ajax({
+            type: 'GET',
+            url: "/main/dht/on",
+          });
+        } else {
+          $("#dht_switch").prop("checked", false);
+        }
+      }
+    });
+
+
   });
 </script>
 
