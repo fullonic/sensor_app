@@ -39,7 +39,7 @@ class Sensors(db.Model):
 
     def __repr__(self):
         """Represent the state of all sensors."""
-        return str(self.to_json())
+        return str(self.to_json)
 
 
 class Data(db.Model):
