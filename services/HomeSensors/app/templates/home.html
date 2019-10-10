@@ -6,6 +6,7 @@
 
   <!-- CSS VENDOR SCRIPTS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 
   <!-- JAVASCRIPT VENDOR SCRIPTS -->
   <script src="https://kit.fontawesome.com/8af7b0b0c7.js" charset="utf-8"></script>
@@ -17,36 +18,99 @@
 </head>
 
 <body>
-  <section id="menuBar">
-    <nav class="navbar navbar-dark bg-warning">
-      <a class="navbar-brand" href="{{ url_for('main.home') }}">
-        <img src="../static/img/logo.png" width="30" height="30" class="d-inline-block align-top" alt="">
-        Home Sensors
-      </a>
-    </nav>
-  </section>
+
+  <nav class="navbar navbar-dark bg-warning">
+    <a class="navbar-brand" href="{{ url_for('main.home') }}">
+      <img src="../static/img/logo.png" width="30" height="30" class="d-inline-block align-top" alt="">
+      Home Sensors
+    </a>
+  </nav>
   <div class="container">
-    <div class="row">
+    <div class="row mt-5">
       <small>Real time information</small>
     </div>
     <div class="row">
-      <div class="col-3">
-        <p>Temperature: {{temperature}} ºC</p>
+      <div class="col-md-4">
+        Temperature: <label id="temp"></label> ºC
       </div>
-      <p>Humidity: {{humidity}} % </p>
-      <div class="col-3">
-        <p> {{ state }} </p>
+      <div class="col-md-4">
+        Humidity: <label id="hum"></label> %
       </div>
     </div>
-    <div class="row">
-      <a href="{{url_for('main.ldr', n='1')}}" class="btn btn-primary">ON</a>
-      <a href="{{url_for('main.ldr', n='0')}}" class="btn btn-danger">OFF</a>
+    <!-- LDR -->
+    <div class="row mt-4">
+      <small>LDR Sensor</small>
     </div>
+    <div class="row mt-1">
+      <a href="#" id="ldr" onclick="readLDR()" class="btn btn-primary">READ</a>
+      <small class="ml-3" id="ldr_read">NONE</small>
+    </div>
+
+    <!-- DHT -->
+    <div class="row mt-4">
+      <small>DHT Sensor</small>
+    </div>
+    <div class="row mt-1">
+      <label class="switch">
+        <input id="dht_switch" type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </div>
+
   </div>
   </div>
 
 
 </body>
 
+<script type="text/javascript">
+  $("#dht_switch").on("click", function() {
+
+    if (document.getElementById('dht_switch').checked) {
+      $.ajax({
+        type: 'GET',
+        url: "/main/dht/on",
+      });
+      console.log("DHT ON");
+    } else {
+      $.ajax({
+        type: 'GET',
+        url: "/main/dht/off",
+      });
+      console.log("DHT OFF");
+    }
+  });
+
+
+  function readLDR() {
+    $.ajax({
+      type: 'GET',
+      url: "/main/ldr",
+      contentType: false,
+      success: function(data) {
+        $("#ldr_read").text(data);
+      }
+    });
+  }
+
+
+  $(document).ready(function() {
+    setInterval(
+      function() {
+        $.ajax({
+          type: 'GET',
+          url: "/main/real_time",
+          contentType: false,
+          success: function(data) {
+            console.log("temp " + data.t);
+            $("#temp").text(data.t);
+            $("#hum").text(data.h);
+          }
+        });
+
+      }, 3000
+    );
+  });
+</script>
 
 </html>

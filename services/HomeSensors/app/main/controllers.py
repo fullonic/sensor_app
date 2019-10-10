@@ -2,6 +2,7 @@
 
 import os
 import subprocess
+import random
 import signal
 
 from flask import Blueprint, render_template, redirect, url_for, session
@@ -23,14 +24,7 @@ main_blueprint = Blueprint(
 @main_blueprint.route("/")
 def home(state="OFF"):
     """Landing Page."""
-    temp = cache.get("real_temp")
-    humidity = cache.get("real_hum")
-
-    state = "ON"
-
-    return render_template(
-        "home.html", temperature=temp, humidity=humidity, state=state
-    )
+    return render_template("home.html")
 
 
 @main_blueprint.route("/dht/<switch>", methods=["POST", "GET"])
@@ -53,5 +47,18 @@ def dht(switch):
 @main_blueprint.route("/ldr", methods=["POST", "GET"])
 def ldr():
     """Get LDR Information."""
-    from app.sensors.ldr import manual_read  # noqa
-    pass
+    try:
+        from app.sensors.ldr import manual_read  # noqa
+
+        fase = manual_read()
+    except RuntimeError:
+        fase = str(random.randint(10, 1000))
+    return fase
+
+
+# FOR API ROUTES
+@main_blueprint.route("/real_time")
+def real_time():
+    temp = cache.get("real_temp")
+    humidity = cache.get("real_hum")
+    return {"t": temp, "h": humidity}
