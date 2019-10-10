@@ -32,7 +32,7 @@ def sensor_test():
     dht = Sensors.query.filter_by(name="DHT").first()
     cache.set("dht_running", dht.running)
     freq = 1  # frequency of reading data for real time information
-    write_to_db = 10  # frequency of saving to db
+    write_to_db = 5  # frequency of saving to db
     count = 0  # flag variable
     while cache.get("dht_running"):
         temperature = random.randint(10, 21)
