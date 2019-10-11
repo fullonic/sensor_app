@@ -1,6 +1,8 @@
-from sqlalchemy import func
+"""Data Base models."""
+
 from datetime import datetime
 
+from sqlalchemy import func
 from app import db
 
 
@@ -67,8 +69,36 @@ class TemperatureHumidity(Data):
         """Item information representation."""
         return f"Temp: {self.temperature} ºC || Hum: {self.humidity} % at {str(self.date)} "
 
+    @classmethod
     def daily_resume(self):
-        daily = None
+        """Generate the daily average by hour of Temperature and Humidity.
+
+        This method runs every day at 23:59
+        """
+        # TODO: Add this daily job to celery beat
+        hours = [i for i in range(24)]
+        date = self.query.filter_by(hour=18).first()
+        year = date.date.year
+        month = date.date.month
+        day = date.date.day
+        for hour in hours:
+            temp_value = (
+                self.query.with_entities(func.avg(self.temperature))
+                .filter_by(hour=hour)
+                .first()
+            )
+            hum_value = (
+                self.query.with_entities(func.avg(self.humidity))
+                .filter_by(hour=hour)
+                .first()
+            )
+            date_values = dict(hour=hour, day=day, month=month, year=year)
+            temp = Temperature(**date_values, value=round(temp_value[0], 2))
+            hum = Humidity(**date_values, value=round(hum_value[0], 2))
+
+            db.session.add(temp)
+            db.session.add(hum)
+            db.session.commit()
 
 
 class LDR(Data):
@@ -89,6 +119,10 @@ class Historic(db.Model):
     year = db.Column(db.Integer(), nullable=False)
     value = db.Column(db.Float(), nullable=False)
 
+    def __repr__(self):
+        """Item information representation."""
+        return str(self.to_json)
+
 
 class Temperature(Historic):
     """Temperature Historic Records."""
@@ -108,6 +142,7 @@ class Temperature(Historic):
                 "month": self.month,
                 "year": self.year,
                 "value": self.value,
+                "unit": self.unit,
             },
         }
 
@@ -123,12 +158,13 @@ class Humidity(Historic):
     def to_json(self):
         """JSON representation of sensor config."""
         return {
-            "sensor_name": "Temperature",
+            "sensor_name": "Humidity",
             "data": {
                 "hour": self.hour,
                 "day": self.day,
                 "month": self.month,
                 "year": self.year,
                 "value": self.value,
+                "unit": self.unit,
             },
         }

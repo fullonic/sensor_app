@@ -29,8 +29,7 @@ def create_app(config=None):
     migrate.init_app(app, db)
     cache.init_app(app)
 
-    from .models import TemperatureHumidity  # noqa
-    from .models import Sensors  # noqa
+    from .models import TemperatureHumidity, Sensors, Temperature, Humidity  # noqa
     from app.sensors.temp import sensor_test
 
     # TODO: CRETE HERE A THREAD TO START SENSORS
@@ -48,6 +47,7 @@ def create_app(config=None):
 
     @app.shell_context_processor
     def ctx():
-        return {"db": db, "temp_hum": TemperatureHumidity, "Sensors": Sensors}
+        return {"db": db, "temp_hum": TemperatureHumidity, "Sensors": Sensors,
+                "Temperature": Temperature, "Humidity": Humidity}
 
     return app
