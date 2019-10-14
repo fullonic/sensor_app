@@ -1,14 +1,11 @@
 """Main page for sensor controller and reads."""
 
-import os
-import subprocess
 import random
-import signal
 
 from flask import Blueprint, render_template, redirect, url_for, session
 
 from app import cache
-from app.models import TemperatureHumidity, Sensors
+from app.models import TemperatureHumidity, Sensors, Humidity, Temperature, LDR
 from app.sensors.temp import sensor_test
 
 
@@ -56,7 +53,7 @@ def ldr():
     return fase
 
 
-# FOR API ROUTES
+# API ROUTES
 @main_blueprint.route("/real_time")
 def real_time():
     """Get 'real time' information of DHT sensor."""
@@ -70,3 +67,20 @@ def sensors_config(name):
     """Get sensor configuration information."""
     sensor = Sensors.query.filter_by(name=name).first()
     return sensor.to_json
+
+
+@main_blueprint.route("/<string:type>/get_all")
+def get_all(type):
+    """Get all DB values."""
+    table = {
+        "DHT": TemperatureHumidity,
+        "humidity": Humidity,
+        "temperature": Temperature,
+        "ldr": LDR,
+    }
+    return {
+        "data": [
+            {"temperature": row.temperature, "humidity": row.humidity, "date": row.date}
+            for row in table[type]().query.all()
+        ]
+    }
