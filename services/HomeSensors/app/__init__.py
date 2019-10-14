@@ -35,7 +35,7 @@ def create_app(config=None):
     from .models import TemperatureHumidity, Sensors, Temperature, Humidity  # noqa
     from app.sensors.temp import sensor_test
 
-    # TODO: CRETE HERE A THREAD TO START SENSORS
+    # TODO: REMOVE THREAD AND CREATE A CELERY TASK
     @app.before_first_request
     def start_sensors():
         def run(app):
@@ -47,6 +47,9 @@ def create_app(config=None):
             f.write(f"RUNNING FIRST:  {str(cache.get('dht_running'))}")
             f.write(str(datetime.datetime.now()))
 
+
+    # FOR CELERY TEST ONLY
+    from app.main.tasks import log
     @app.shell_context_processor
     def ctx():
         return {
@@ -55,6 +58,7 @@ def create_app(config=None):
             "Sensors": Sensors,
             "Temperature": Temperature,
             "Humidity": Humidity,
+            "log": log,
         }
 
     return app
