@@ -81,7 +81,7 @@ class TemperatureHumidity(Data):
         """
         # TODO: Add this daily job to celery beat
         hours = [i for i in range(24)]
-        date = self.query.filter_by(hour=18).first()
+        date = self.query.filter_by(hour=13).first()
         year = date.date.year
         month = date.date.month
         day = date.date.day
@@ -96,13 +96,17 @@ class TemperatureHumidity(Data):
                 .filter_by(hour=hour)
                 .first()
             )
-            date_values = dict(hour=hour, day=day, month=month, year=year)
-            temp = Temperature(**date_values, value=round(temp_value[0], 2))
-            hum = Humidity(**date_values, value=round(hum_value[0], 2))
+            # Removes before deploy
+            try:
+                date_values = dict(hour=hour, day=day, month=month, year=year)
+                temp = Temperature(**date_values, value=round(temp_value[0], 2))
+                hum = Humidity(**date_values, value=round(hum_value[0], 2))
 
-            db.session.add(temp)
-            db.session.add(hum)
-            db.session.commit()
+                db.session.add(temp)
+                db.session.add(hum)
+                db.session.commit()
+            except TypeError:
+                pass
 
 
 class LDR(Data):

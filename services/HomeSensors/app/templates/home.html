@@ -103,9 +103,9 @@
           url: "/main/real_time",
           contentType: false,
           success: function(data) {
-            console.log("temp " + data.t);
-            $("#temp").text(data.t);
-            $("#hum").text(data.h);
+            console.log("temp " + data.temperature);
+            $("#temp").text(data.temperature);
+            $("#hum").text(data.humidity);
           }
         });
 

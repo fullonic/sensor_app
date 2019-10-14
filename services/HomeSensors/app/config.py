@@ -3,6 +3,7 @@
 import os
 from datetime import timedelta
 
+from celery.schedules import crontab
 
 class Config:
     SECRET_KEY = "HOME SENSOR APP"
@@ -17,10 +18,13 @@ class Config:
     CELERY_RESULT_BACKEND = "amqp://rabbitmq:rabitmq@localhost//"
 
     CELERYBEAT_SCHEDULE = {
-        "log-10-sec":{
-            "task": "app.main.tasks.log",
-            "schedule": timedelta(seconds=10),
-            "args": ("this is a test",)
+        "write-to-db": {
+            "task": "app.main.tasks.write_to_db",
+            "schedule": timedelta(seconds=60),
+        },
+        "daily-resume": {
+            "task": "app.main.tasks.generate_daily_resume",
+            "schedule": crontab(day_of_week="*", hour='23', minute='59')
         }
     }
 

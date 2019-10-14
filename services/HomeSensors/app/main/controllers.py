@@ -2,7 +2,7 @@
 
 import random
 
-from flask import Blueprint, render_template, redirect, url_for, session
+from flask import Blueprint, render_template, redirect, url_for
 
 from app import cache
 from app.models import TemperatureHumidity, Sensors, Humidity, Temperature, LDR
@@ -57,9 +57,7 @@ def ldr():
 @main_blueprint.route("/real_time")
 def real_time():
     """Get 'real time' information of DHT sensor."""
-    temp = cache.get("real_temp")
-    humidity = cache.get("real_hum")
-    return {"t": temp, "h": humidity}
+    return {k: v for k, v in sensor_test().items()}
 
 
 @main_blueprint.route("/sensors/<name>", methods=["GET"])
