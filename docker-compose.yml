@@ -24,7 +24,7 @@ services:
       context:    ./services/HomeSensors/
       dockerfile: Dockerfile
     entrypoint: celery
-    command: -A celery_worker worker --loglevel=info
+    command: -A celery_worker worker --loglevel=info -B
     volumes:
       - "./services/HomeSensors:/home/HomeSensors/app"
     env_file:
