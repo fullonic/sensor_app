@@ -33,23 +33,11 @@ def create_app(config=None):
     celery.init_app(app)
 
     from .models import TemperatureHumidity, Sensors, Temperature, Humidity  # noqa
-    from app.sensors.temp import sensor_test
-
-    # TODO: REMOVE THREAD AND CREATE A CELERY TASK
-    @app.before_first_request
-    def start_sensors():
-        def run(app):
-            with app.app_context():
-                sensor_test()
-
-        Thread(target=run, args=(app,)).start()
-        with open("log.txt", "w") as f:
-            f.write(f"RUNNING FIRST:  {str(cache.get('dht_running'))}")
-            f.write(str(datetime.datetime.now()))
-
+    from app.sensors.temp import sensor_test, dht_sensor  # noqa
 
     # FOR CELERY TEST ONLY
     from app.main.tasks import log
+
     @app.shell_context_processor
     def ctx():
         return {

@@ -3,7 +3,12 @@
 from .. import celery
 from app import db
 from app.models import TemperatureHumidity
-from app.sensors.temp import sensor_test
+
+try:  # only works when running on pi
+    import Adafruit_DHT  # noqa
+    from app.sensors.temp import dht_sensor as sensor
+except ModuleNotFoundError:
+    from app.sensors.temp import sensor_test as sensor
 
 
 @celery.task()
@@ -23,7 +28,6 @@ def generate_daily_resume():
 @celery.task()
 def write_to_db():
     """Write DHT data to DB model."""
-    reads = sensor_test()
-    data = TemperatureHumidity(**reads)
+    data = TemperatureHumidity(**sensor())
     db.session.add(data)
     db.session.commit()

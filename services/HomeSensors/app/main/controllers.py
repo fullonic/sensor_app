@@ -6,8 +6,12 @@ from flask import Blueprint, render_template, redirect, url_for
 
 from app import cache
 from app.models import TemperatureHumidity, Sensors, Humidity, Temperature, LDR
-from app.sensors.temp import sensor_test
 
+try:  # only works when running on pi
+    import Adafruit_DHT  # noqa
+    from app.sensors.temp import dht_sensor as sensor
+except ModuleNotFoundError:
+    from app.sensors.temp import sensor_test as sensor  # noqa
 
 main_blueprint = Blueprint(
     "main",
@@ -31,13 +35,13 @@ def dht(switch):
     if switch == "on":
         dht.turn_on()
         cache.set("dht_running", True)
-        sensor_test()
+        sensor()
     elif switch == "off":
         dht.turn_off()
         cache.set("dht_running", False)
         cache.set("real_temp", None)
         cache.set("real_hum", None)
-        sensor_test()
+        sensor()
     return redirect(url_for("main.home"))
 
 
@@ -58,17 +62,16 @@ def ldr():
 def real_time():
     """Get 'real time' information of DHT sensor."""
     if cache.get("dht_running"):
-        return {k: v for k, v in sensor_test().items()}
+        return {k: v for k, v in sensor().items()}
     else:
-        return {"temperature": 0,
-                "humidity": 0}
+        return {"temperature": 0, "humidity": 0}
 
 
 @main_blueprint.route("/sensors/<name>", methods=["GET"])
 def sensors_config(name):
-    """Get sensor configuration information."""
-    sensor = Sensors.query.filter_by(name=name).first()
-    return sensor.to_json
+    """Get sensor configuration information in JSON format."""
+    s = Sensors.query.filter_by(name=name).first()
+    return s.to_json
 
 
 @main_blueprint.route("/<string:type>/get_all")
