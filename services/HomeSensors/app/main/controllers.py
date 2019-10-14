@@ -57,7 +57,11 @@ def ldr():
 @main_blueprint.route("/real_time")
 def real_time():
     """Get 'real time' information of DHT sensor."""
-    return {k: v for k, v in sensor_test().items()}
+    if cache.get("dht_running"):
+        return {k: v for k, v in sensor_test().items()}
+    else:
+        return {"temperature": 0,
+                "humidity": 0}
 
 
 @main_blueprint.route("/sensors/<name>", methods=["GET"])

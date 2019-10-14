@@ -5,6 +5,7 @@ from datetime import timedelta
 
 from celery.schedules import crontab
 
+
 class Config:
     SECRET_KEY = "HOME SENSOR APP"
     DEBUG = True
@@ -24,8 +25,8 @@ class Config:
         },
         "daily-resume": {
             "task": "app.main.tasks.generate_daily_resume",
-            "schedule": crontab(day_of_week="*", hour='23', minute='59')
-        }
+            "schedule": crontab(day_of_week="*", hour="23", minute="59"),
+        },
     }
 
-    TIMEZONE = 'UTC'
+    TIMEZONE = "UTC"
