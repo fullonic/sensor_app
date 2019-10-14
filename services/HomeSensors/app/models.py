@@ -12,13 +12,15 @@ class Sensors(db.Model):
     __tablename__ = "sensors"
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(16), nullable=False)
-    frequency = db.Column(db.Float(32), default=1)
+    read_frequency = db.Column(db.Float(32), default=1)
+    write_to_db = db.Column(db.Float(32), default=60)
     running = db.Column(db.Boolean(), default=True)
 
-    def __init__(self, name, frequency, running):  # noqa
+    def __init__(self, name, running, read_frequency, write_to_db):  # noqa
         self.name = name
-        self.frequency = frequency
         self.running = running
+        self.read_frequency = read_frequency
+        self.write_to_db = write_to_db
 
     def turn_on(self):
         """Turn ON a sensor."""
@@ -37,7 +39,9 @@ class Sensors(db.Model):
         """JSON representation of sensor config."""
         return {
             "sensor_name": self.name,
-            "config": {"frequency": self.frequency, "running": self.running},
+            "config": {"running": self.running,
+                       "read_frequency": self.read_frequency,
+                       "write_to_db": self.write_to_db}
         }
 
     def __repr__(self):
