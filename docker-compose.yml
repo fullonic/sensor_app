@@ -18,6 +18,23 @@ services:
     depends_on:
       - sensors-db
       - rmq
+  # Celery worker
+  worker:
+    build:
+      context:    ./services/HomeSensors/
+      dockerfile: Dockerfile
+    entrypoint: celery
+    command: -A celery_worker worker --loglevel=info
+    volumes:
+      - "./services/HomeSensors:/home/HomeSensors/app"
+    env_file:
+      - app.env
+    links:
+      - rmq
+    depends_on:
+      - rmq
+      - sensors-db
+
   # DB Container
   sensors-db:
     build:
