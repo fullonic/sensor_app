@@ -16,6 +16,7 @@ services:
 
     depends_on:
       - sensors-db
+      - rmq
   sensors-db:
     build:
       context:    ./services/HomeSensors/app/db
@@ -33,3 +34,10 @@ services:
       - 80:80
     depends_on:
       - sensors
+
+  rmq:
+    image:          rabbitmq:3-management
+    env_file:
+      - app.env
+    ports:
+      - 15672:15672
