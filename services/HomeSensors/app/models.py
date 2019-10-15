@@ -81,13 +81,16 @@ class TemperatureHumidity(Data):
 
         This method runs every day at 23:59
         """
-        # TODO: Add this daily job to celery beat
+        # Create a base information to populate historic tables with actual day of the year
+        date = datetime.now()
+        year = date.year
+        month = date.month
+        day = date.day
+        date_values = dict(day=day, month=month, year=year)
+        # All day hours
         hours = [i for i in range(24)]
-        date = self.query.filter_by(hour=13).first()
-        year = date.date.year
-        month = date.date.month
-        day = date.date.day
         for hour in hours:
+            # Avoids error when app runs for the first and there is no records for all hours
             temp_value = (
                 self.query.with_entities(func.avg(self.temperature))
                 .filter_by(hour=hour)
@@ -98,23 +101,22 @@ class TemperatureHumidity(Data):
                 .filter_by(hour=hour)
                 .first()
             )
-            # Removes before deploy
-            try:
-                date_values = dict(hour=hour, day=day, month=month, year=year)
-                temp = Temperature(**date_values, value=round(temp_value[0], 2))
-                hum = Humidity(**date_values, value=round(hum_value[0], 2))
+
+            if hum_value[0] is not None:
+                temp = Temperature(
+                    **date_values, hour=hour, value=round(temp_value[0], 2)
+                )
+                hum = Humidity(**date_values, hour=hour, value=round(hum_value[0], 2))
 
                 db.session.add(temp)
                 db.session.add(hum)
                 db.session.commit()
-            except TypeError:
-                pass
         self.clean_up()
 
     @classmethod
     def clean_up(self):
         """Clean up old information after daily resume."""
-        data = self.query.all()
+        data = self.query.filter(self.date < datetime.now()).all()
         for rec in data:
             db.session.delete(rec)
             db.session.commit()
