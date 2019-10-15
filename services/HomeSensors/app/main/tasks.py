@@ -2,7 +2,7 @@
 
 from .. import celery
 from app import db
-from app.models import TemperatureHumidity
+from app.models import TemperatureHumidity, Humidity, Temperature
 
 try:  # only works when running on pi
     import Adafruit_DHT  # noqa
@@ -23,6 +23,15 @@ def generate_daily_resume():
     # Create daily resume
     TemperatureHumidity.daily_resume()
     return "Created"
+
+
+@celery.task()
+def generate_daily_backup():
+    """Generate the daily backup."""
+    # Create daily resume
+    Humidity.backup()
+    Temperature.backup()
+    return "BACKUP CREATED"
 
 
 @celery.task()

@@ -1,5 +1,8 @@
 """Data Base models."""
 
+import csv
+import json
+
 from datetime import datetime
 
 from sqlalchemy import func
@@ -144,6 +147,30 @@ class Historic(db.Model):
         """Item information representation."""
         return str(self.to_json)
 
+    @property
+    def to_json(self):
+        """JSON representation of sensor config."""
+        return [
+            {
+                "hour": rec.hour,
+                "day": rec.day,
+                "month": rec.month,
+                "year": rec.year,
+                "value": rec.value,
+                "unit": rec.unit,
+            }
+            for rec in self.query.all()
+        ]
+
+    @classmethod
+    def backup(self, format="json"):
+        """Generate Historic data backups."""
+        fname = f"[BACKUP:]{self.__name__}_{str(datetime.now())}.{format}"
+
+        if format == "json":
+            with open(f"./app/static/data-backups/{fname}", "w") as f:
+                json.dump({self.__name__: self().to_json}, f)
+
 
 class Temperature(Historic):
     """Temperature Historic Records."""
@@ -152,21 +179,6 @@ class Temperature(Historic):
 
     unit = db.Column(db.String(4), default="ºC")
 
-    @property
-    def to_json(self):
-        """JSON representation of sensor config."""
-        return {
-            "sensor_name": "Temperature",
-            "data": {
-                "hour": self.hour,
-                "day": self.day,
-                "month": self.month,
-                "year": self.year,
-                "value": self.value,
-                "unit": self.unit,
-            },
-        }
-
 
 class Humidity(Historic):
     """Temperature Historic Records."""
@@ -174,18 +186,3 @@ class Humidity(Historic):
     __tablename__ = "historic_humidity"
 
     unit = db.Column(db.String(4), default="%")
-
-    @property
-    def to_json(self):
-        """JSON representation of sensor config."""
-        return {
-            "sensor_name": "Humidity",
-            "data": {
-                "hour": self.hour,
-                "day": self.day,
-                "month": self.month,
-                "year": self.year,
-                "value": self.value,
-                "unit": self.unit,
-            },
-        }
