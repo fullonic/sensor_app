@@ -28,8 +28,8 @@ class Config:
         },
         "daily-resume": {
             "task": "app.main.tasks.generate_daily_resume",
-            "schedule": crontab(day_of_week="*", hour="15", minute="45"),
+            "schedule": crontab(day_of_week="*", hour=23, minute=59),
         },
     }
 
-    TIMEZONE = "UTC"
+    TIMEZONE = "Europe/Madrid"

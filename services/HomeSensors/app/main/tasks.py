@@ -17,7 +17,7 @@ def log(msg):
     return msg
 
 
-@celery.task(ignore_result=True)
+@celery.task()
 def generate_daily_resume():
     """Generate the daily resume."""
     # Create daily resume
@@ -25,7 +25,7 @@ def generate_daily_resume():
     return "Created"
 
 
-@celery.task(name="Write to DB")
+@celery.task()
 def write_to_db():
     """Write DHT data to DB model."""
     data = TemperatureHumidity(**sensor())
