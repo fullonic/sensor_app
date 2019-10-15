@@ -21,7 +21,7 @@ class Config:
     CELERYBEAT_SCHEDULE = {
         "write-to-db": {
             "task": "app.main.tasks.write_to_db",
-            "schedule": timedelta(seconds=60),
+            "schedule": timedelta(seconds=60000),
         },
         "daily-resume": {
             "task": "app.main.tasks.generate_daily_resume",

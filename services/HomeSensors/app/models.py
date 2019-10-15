@@ -39,9 +39,11 @@ class Sensors(db.Model):
         """JSON representation of sensor config."""
         return {
             "sensor_name": self.name,
-            "config": {"running": self.running,
-                       "read_frequency": self.read_frequency,
-                       "write_to_db": self.write_to_db}
+            "config": {
+                "running": self.running,
+                "read_frequency": self.read_frequency,
+                "write_to_db": self.write_to_db,
+            },
         }
 
     def __repr__(self):
@@ -107,6 +109,15 @@ class TemperatureHumidity(Data):
                 db.session.commit()
             except TypeError:
                 pass
+        self.clean_up()
+
+    @classmethod
+    def clean_up(self):
+        """Clean up old information after daily resume"""
+        data = self.query.all()
+        for rec in data:
+            db.session.delete(rec)
+            db.session.commit()
 
 
 class LDR(Data):

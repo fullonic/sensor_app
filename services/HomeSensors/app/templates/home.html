@@ -42,7 +42,7 @@
       <small>LDR Sensor</small>
     </div>
     <div class="row mt-1">
-      <a href="#" id="ldr" onclick="readLDR()" class="btn btn-primary">READ</a>
+      <a href="#" id="ldr" class="btn btn-primary">READ</a>
       <small class="ml-3" id="ldr_read">NONE</small>
     </div>
 
@@ -64,8 +64,8 @@
 </body>
 
 <script type="text/javascript">
+  // SWITCH FOR DHT
   $("#dht_switch").on("click", function() {
-
     if (document.getElementById('dht_switch').checked) {
       $.ajax({
         type: 'GET',
@@ -81,8 +81,9 @@
     }
   });
 
+  // LDR MANUAL READ
 
-  function readLDR() {
+  $("#ldr").on("click", function() {
     $.ajax({
       type: 'GET',
       url: "/main/ldr",
@@ -91,8 +92,7 @@
         $("#ldr_read").text(data);
       }
     });
-  }
-
+  });
 
   $(document).ready(function() {
     // READ DHT SENSOR DATA
@@ -109,6 +109,19 @@
           }
         });
 
+      }, 3000
+    );
+    // READ LDR SENSOR DATA
+    setInterval(
+      function() {
+        $.ajax({
+          type: 'GET',
+          url: "/main/ldr",
+          contentType: false,
+          success: function(data) {
+            $("#ldr_read").text(data);
+          }
+        });
       }, 3000
     );
 
@@ -129,8 +142,6 @@
         }
       }
     });
-
-
   });
 </script>
 

@@ -9,4 +9,5 @@
 - [x] Add LDR sensor model
 - [x] Create model method to get information about day and insert the hour average to historic
 - [x] Needs to solve problem with last entry empty
+- [ ] Improve Security: Add user; change services default credentials 
 -
