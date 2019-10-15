@@ -1,13 +1,13 @@
 - [x] Add docker volume for postgresql DB
-- [ ] Create celery tasks to write sensor data into DB
+- [x] Create celery tasks to write sensor data into DB
 - [ ] Create cli command to populate db sensor when app run for the first time
-- [ ] Add celery task for running daily resume method
+- [x] Add celery task for running daily resume method
 - [ ] Create DB backup script to csv file
-- [ ] Create user authentication and custom config
+- [ ] Create custom config
 - [ ] Add SocketIO for PIR reading
 - [ ] Create Dash live data stream
 - [x] Add LDR sensor model
 - [x] Create model method to get information about day and insert the hour average to historic
 - [x] Needs to solve problem with last entry empty
-- [ ] Improve Security: Add user; change services default credentials 
+- [ ] Improve Security: Add user authentication; change services default credentials
 -

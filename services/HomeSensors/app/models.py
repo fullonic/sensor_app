@@ -113,7 +113,7 @@ class TemperatureHumidity(Data):
 
     @classmethod
     def clean_up(self):
-        """Clean up old information after daily resume"""
+        """Clean up old information after daily resume."""
         data = self.query.all()
         for rec in data:
             db.session.delete(rec)

@@ -14,6 +14,9 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
 
+    # SENSORS CONFIGURATION
+    DHT_TO_DB = 60
+
     # CELERY CONFIGURATION
     CELERY_BROKER_URL = "amqp://rabbitmq:rabbitmq@localhost//"
     CELERY_RESULT_BACKEND = "amqp://rabbitmq:rabitmq@localhost//"
@@ -21,11 +24,11 @@ class Config:
     CELERYBEAT_SCHEDULE = {
         "write-to-db": {
             "task": "app.main.tasks.write_to_db",
-            "schedule": timedelta(seconds=60000),
+            "schedule": timedelta(seconds=DHT_TO_DB),
         },
         "daily-resume": {
             "task": "app.main.tasks.generate_daily_resume",
-            "schedule": crontab(day_of_week="*", hour="23", minute="59"),
+            "schedule": crontab(day_of_week="*", hour="15", minute="45"),
         },
     }
 

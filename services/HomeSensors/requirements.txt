@@ -7,4 +7,5 @@ requests
 gunicorn
 RPi.GPIO
 Celery
+flower
 Flask-Celery-Helper

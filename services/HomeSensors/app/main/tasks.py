@@ -25,7 +25,7 @@ def generate_daily_resume():
     return "Created"
 
 
-@celery.task()
+@celery.task(name="Write to DB")
 def write_to_db():
     """Write DHT data to DB model."""
     data = TemperatureHumidity(**sensor())
