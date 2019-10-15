@@ -10,8 +10,10 @@ from app.models import TemperatureHumidity, Sensors, Humidity, Temperature, LDR
 try:  # only works when running on pi
     import Adafruit_DHT  # noqa
     from app.sensors.temp import dht_sensor as sensor
+    from app.sensors.ldr import manual_read as ldr_read
 except ModuleNotFoundError:
     from app.sensors.temp import sensor_test as sensor  # noqa
+    ldr_read = None
 
 main_blueprint = Blueprint(
     "main",
@@ -48,13 +50,10 @@ def dht(switch):
 @main_blueprint.route("/ldr", methods=["POST", "GET"])
 def ldr():
     """Get LDR Information."""
-    try:
-        from app.sensors.ldr import manual_read  # noqa
 
-        fase = manual_read()
-    except RuntimeError:
-        fase = str(random.randint(10, 1000))
-    return fase
+    if ldr_read is not None:
+        return ldr_read()
+    return str(random.randint(10, 1000))
 
 
 # API ROUTES
