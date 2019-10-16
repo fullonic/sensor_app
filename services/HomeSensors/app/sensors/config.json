@@ -1,0 +1,17 @@
+{
+  "sensors": [{
+    "sensor_name": "LDR",
+    "config": {
+      "running": true,
+      "read_frequency": 1.0,
+      "write_to_db": 60.0
+    }
+  }, {
+    "sensor_name": "DHT",
+    "config": {
+      "running": true,
+      "read_frequency": 1.0,
+      "write_to_db": 60.0
+    }
+  }]
+}
