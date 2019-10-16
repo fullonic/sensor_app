@@ -34,5 +34,5 @@ def manual_read():
         fase = "Dark"
     else:
         fase = "Light"
-    GPIO.cleanup()
-    return fase
+    # GPIO.cleanup()
+    return f"fase: {light}"
