@@ -2,12 +2,14 @@
 
 import os
 import subprocess
+import random
 import signal
 
 from flask import Blueprint, render_template, redirect, url_for, session
 
 from app import cache
-from app.models import TemperatureHumidity
+from app.models import TemperatureHumidity, Sensors
+from app.sensors.temp import sensor_test
 
 
 main_blueprint = Blueprint(
@@ -22,49 +24,41 @@ main_blueprint = Blueprint(
 @main_blueprint.route("/")
 def home(state="OFF"):
     """Landing Page."""
-    data = TemperatureHumidity().query.all()[-1]
-    temp = data.temperature
-    humidity = data.humidity
-    state = "ON"
-
-    return render_template(
-        "home.html", temperature=temp, humidity=humidity, state=state
-    )
+    return render_template("home.html")
 
 
-@main_blueprint.route("/ldr/<n>")
-def ldr(n):
+@main_blueprint.route("/dht/<switch>", methods=["POST", "GET"])
+def dht(switch):
     """Landing Page."""
-    # from app.sensors.temp import test_sensor
-    if n == "1":
-        if cache.get("temp_process"):
-            pass
-        else:
-            process_ = subprocess.Popen(
-                "python3 app/sensors/temp.py", preexec_fn=os.setsid, shell=True
-            )
-            cache.set("temp_process", os.getpgid(process_.pid))
-    elif n == "0":
-        try:
-            os.killpg(cache.get("temp_process"), signal.SIGTERM)
-            cache.delete("temp_process")
-        except TypeError:
-            pass
-
+    dht = Sensors.query.filter_by(name="DHT").first()
+    if switch == "on":
+        dht.turn_on()
+        cache.set("dht_running", True)
+        sensor_test()
+    elif switch == "off":
+        dht.turn_off()
+        cache.set("dht_running", False)
+        cache.set("real_temp", None)
+        cache.set("real_hum", None)
+        sensor_test()
     return redirect(url_for("main.home"))
 
 
-@main_blueprint.route("/sensor")
-def sensor():
-    data = TemperatureHumidity().query.all()[-1]
+@main_blueprint.route("/ldr", methods=["POST", "GET"])
+def ldr():
+    """Get LDR Information."""
+    try:
+        from app.sensors.ldr import manual_read  # noqa
 
-    return {
-        "Temp": f"{data.temperature} ºC",
-        "Humidity": f"{data.humidity} %",
-        "Date Time": str(data.date),
-    }
+        fase = manual_read()
+    except RuntimeError:
+        fase = str(random.randint(10, 1000))
+    return fase
 
 
-# if __name__ == "__main__":
-#     db.create_all()
-#     app.run(debug=True)
+# FOR API ROUTES
+@main_blueprint.route("/real_time")
+def real_time():
+    temp = cache.get("real_temp")
+    humidity = cache.get("real_hum")
+    return {"t": temp, "h": humidity}
