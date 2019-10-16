@@ -1,7 +1,7 @@
 version:          "3.7"
 
 services:
-  # main app container
+  # Home sensors app
   sensors:
     build:
       context:    ./services/HomeSensors
@@ -33,6 +33,13 @@ services:
     depends_on:
       - rmq
       - sensors-db
+  # Celery Broker
+    rmq:
+      image:        rabbitmq:3-management
+      env_file:
+        - app.env
+      ports:
+        - 15672:15672
   # Celery flower
   flower:
     build:
@@ -62,13 +69,5 @@ services:
       - 80:80
     depends_on:
       - sensors
-
-  rmq:
-    image:        rabbitmq:3-management
-    env_file:
-      - app.env
-    ports:
-      - 15672:15672
-
 volumes:
   db-data:

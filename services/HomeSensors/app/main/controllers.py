@@ -13,6 +13,7 @@ try:  # only works when running on pi
     from app.sensors.ldr import manual_read as ldr_read
 except ModuleNotFoundError:
     from app.sensors.temp import sensor_test as sensor  # noqa
+
     ldr_read = None
 
 main_blueprint = Blueprint(
@@ -50,7 +51,6 @@ def dht(switch):
 @main_blueprint.route("/ldr", methods=["POST", "GET"])
 def ldr():
     """Get LDR Information."""
-
     if ldr_read is not None:
         return ldr_read()
     return str(random.randint(10, 1000))
@@ -75,16 +75,9 @@ def sensors_config(name):
 
 @main_blueprint.route("/<string:type>/get_all")
 def get_all(type):
-    """Get all DB values."""
-    table = {
-        "DHT": TemperatureHumidity,
+    """Get all DB values from a table."""
+    data = {
         "humidity": Humidity,
         "temperature": Temperature,
-        "ldr": LDR,
     }
-    return {
-        "data": [
-            {"temperature": row.temperature, "humidity": row.humidity, "date": row.date}
-            for row in table[type]().query.all()
-        ]
-    }
+    return {data[type].__name__: data[type]().to_json}

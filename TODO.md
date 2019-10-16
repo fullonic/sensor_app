@@ -6,10 +6,10 @@
 - [x] Create model method to get information about day and insert the hour average to historic
 - [x] Needs to solve problem with last entry empty
 - [x] Create cli command to populate db sensor when app run for the first time
+- [ ] Add UI backup button
 - [ ] Add functions annotations
 - [ ] Create DB backup script to csv file
 - [ ] Create custom config
 - [ ] Add SocketIO for PIR reading
 - [ ] Improve Security: Add user authentication; change services default credentials
 - [ ] Create Dash live data stream
--
