@@ -5,6 +5,7 @@ import json
 
 from datetime import datetime
 
+
 from sqlalchemy import func
 from app import db
 
@@ -54,6 +55,11 @@ class Sensors(db.Model):
         return str(self.to_json)
 
 
+###########################
+# SENSORS MODELS
+###########################
+
+
 class Data(db.Model):
     """Base sensor class."""
 
@@ -85,27 +91,26 @@ class TemperatureHumidity(Data):
         This method runs every day at 23:59
         """
         # Create a base information to populate historic tables with actual day of the year
-        date = datetime.now()
-        year = date.year
-        month = date.month
-        day = date.day
-        date_values = dict(day=day, month=month, year=year)
+        # date = datetime.now()
+        date = datetime(2019, 10, 18, 23, 59)
+        date_values = dict(day=date.day, month=date.month, year=date.year)
         # All day hours
         hours = [i for i in range(24)]
         for hour in hours:
-            # Avoids error when app runs for the first and there is no records for all hours
-            temp_value = (
-                self.query.with_entities(func.avg(self.temperature))
-                .filter_by(hour=hour)
-                .first()
-            )
-            hum_value = (
-                self.query.with_entities(func.avg(self.humidity))
-                .filter_by(hour=hour)
-                .first()
-            )
+            try:
+                # Avoids error when app runs for the first and there is no records for all hours
+                temp_value = (
+                    self.query.with_entities(func.avg(self.temperature))
+                    .filter_by(hour=hour)
+                    .first()
+                )
+                hum_value = (
+                    self.query.with_entities(func.avg(self.humidity))
+                    .filter_by(hour=hour)
+                    .first()
+                )
 
-            if hum_value[0] is not None:
+                # if hum_value[0] is not None:
                 temp = Temperature(
                     **date_values, hour=hour, value=round(temp_value[0], 2)
                 )
@@ -114,6 +119,10 @@ class TemperatureHumidity(Data):
                 db.session.add(temp)
                 db.session.add(hum)
                 db.session.commit()
+            except Exception as e:
+                with open("log.txt", "w") as f:
+                    f.write(str(e))
+
         self.clean_up()
 
     @classmethod
@@ -131,6 +140,10 @@ class LDR(Data):
     __tablename__ = "ldr"
     fase = db.Column(db.String(32), default="Day")
 
+
+###########################
+# HISTORIC MODELS
+###########################
 
 class Historic(db.Model):
     """Base model for Historic Records."""

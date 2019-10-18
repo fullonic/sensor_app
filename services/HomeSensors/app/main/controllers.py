@@ -31,6 +31,7 @@ def home(state="OFF"):
     return render_template("home.html")
 
 
+# API ROUTES
 @main_blueprint.route("/dht/<switch>", methods=["POST", "GET"])
 def dht(switch):
     """Landing Page."""
@@ -56,7 +57,6 @@ def ldr():
     return str(random.randint(10, 1000))
 
 
-# API ROUTES
 @main_blueprint.route("/real_time")
 def real_time():
     """Get 'real time' information of DHT sensor."""

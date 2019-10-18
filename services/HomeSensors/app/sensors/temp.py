@@ -1,6 +1,8 @@
 import random
 from datetime import datetime
-import time
+import os
+
+
 
 try:
     import Adafruit_DHT  # only works when running on pi
