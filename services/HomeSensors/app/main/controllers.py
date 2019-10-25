@@ -5,7 +5,7 @@ import random
 from flask import Blueprint, render_template, redirect, url_for
 
 from app import cache
-from app.models import TemperatureHumidity, Sensors, Humidity, Temperature, LDR
+from app.models import Sensors, Humidity, Temperature
 
 try:  # only works when running on pi
     import Adafruit_DHT  # noqa

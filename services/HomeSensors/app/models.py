@@ -1,10 +1,8 @@
 """Data Base models."""
 
-import csv
 import json
 
 from datetime import datetime
-
 
 from sqlalchemy import func
 from app import db
@@ -92,13 +90,16 @@ class TemperatureHumidity(Data):
         """
         # Create a base information to populate historic tables with actual day of the year
         # date = datetime.now()
-        date = datetime(2019, 10, 18, 23, 59)
+        date = datetime.now()
+        with open("log.txt", "w") as f:
+            f.write(str(date))
         date_values = dict(day=date.day, month=date.month, year=date.year)
         # All day hours
         hours = [i for i in range(24)]
         for hour in hours:
             try:
-                # Avoids error when app runs for the first and there is no records for all hours
+                # Avoids error when app runs for the first and there is
+                # no records for all hours
                 temp_value = (
                     self.query.with_entities(func.avg(self.temperature))
                     .filter_by(hour=hour)
@@ -120,8 +121,8 @@ class TemperatureHumidity(Data):
                 db.session.add(hum)
                 db.session.commit()
             except Exception as e:
-                with open("log.txt", "w") as f:
-                    f.write(str(e))
+                with open("log.txt", "a") as f:
+                    f.write(str(date), str(e))
 
         self.clean_up()
 
@@ -144,6 +145,7 @@ class LDR(Data):
 ###########################
 # HISTORIC MODELS
 ###########################
+
 
 class Historic(db.Model):
     """Base model for Historic Records."""
