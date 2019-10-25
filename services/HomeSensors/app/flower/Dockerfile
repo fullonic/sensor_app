@@ -1,3 +1,7 @@
+# This docker file is copied directly from https://hub.docker.com/r/mher/flowe
+# If image is pulled directly from docker hub it throws the following error when running on raspberry pi:
+# flower_1      | standard_init_linux.go:211: exec user process caused "exec format error"
+
 # base python image
 FROM python:3.7.3-alpine
 # Get latest root certificates
