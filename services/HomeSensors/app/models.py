@@ -185,6 +185,14 @@ class Historic(db.Model):
             with open(f"./app/static/data-backups/{fname}", "w") as f:
                 json.dump({self.__name__: self().to_json}, f)
 
+    @classmethod
+    def clean_up(self):
+        """Clean up old information after daily resume."""
+        data = self.query.filter(self.date < datetime.now()).all()
+        for rec in data:
+            db.session.delete(rec)
+            db.session.commit()
+
 
 class Temperature(Historic):
     """Temperature Historic Records."""
