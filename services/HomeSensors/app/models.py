@@ -3,7 +3,6 @@
 import json
 
 from datetime import datetime
-
 from sqlalchemy import func
 from app import db
 
@@ -63,8 +62,8 @@ class Data(db.Model):
 
     __abstract__ = True
     id = db.Column(db.Integer(), primary_key=True)
-    hour = db.Column(db.Integer(), default=datetime.now().hour)
-    date = db.Column(db.DateTime(), default=datetime.now())
+    hour = db.Column(db.Integer())
+    date = db.Column(db.DateTime(), default=func.now())
 
 
 class TemperatureHumidity(Data):

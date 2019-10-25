@@ -2,8 +2,6 @@ import random
 from datetime import datetime
 import os
 
-
-
 try:
     import Adafruit_DHT  # only works when running on pi
 except ModuleNotFoundError:
@@ -17,7 +15,7 @@ def dht_sensor():
     """
     # noqa
     humidity, temperature = Adafruit_DHT.read_retry(11, 17)
-    return dict(temperature=temperature, humidity=humidity, date=datetime.now())
+    return dict(temperature=temperature, humidity=humidity, hour=datetime.utcnow().hour)
 
 
 def sensor_test():
@@ -25,4 +23,4 @@ def sensor_test():
     temperature = random.randint(10, 21)
     humidity = random.randint(50, 88)
 
-    return dict(temperature=temperature, humidity=humidity, date=datetime.now())
+    return dict(temperature=temperature, humidity=humidity, hour=datetime.utcnow().hour)
